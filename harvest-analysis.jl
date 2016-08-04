@@ -44,3 +44,36 @@ for month = 1:12
   tempData = data[data[:MONTH] .== month, :]
   push!(lakeResults, (month, sum(tempData[:HVSWT_KG]), size(tempData)[1]))
 end
+
+plotOutputPath = string(projPath, "\\Plots\\Lake\\")
+
+harvestWeight = plot(lakeResults, x="Month", y="HarvestWeight", Geom.line, Guide.title("Harvest Weight by Month for Entire Lake"), Guide.xticks(ticks=lakeResults[:Month]))
+events = plot(lakeResults, x="Month", y="Events", Geom.line, Guide.title("Number Events by Month for Entire Lake"), Guide.xticks(ticks=lakeResults[:Month]))
+
+draw(PNG(string(plotOutputPath, "harvest.png"), 8inch, 6inch), harvestWeight)
+draw(PNG(string(plotOutputPath, "events.png"), 8inch, 6inch), events)
+
+#############################
+# Basin Analysis
+#############################
+
+for basin = 1:length(unique(data[:BASIN])) #number of unique basins
+  basinResults = DataFrame(Month = Int[], HarvestWeight = Float64[], Events = Int64[])
+
+  basinName = unique(data[:BASIN])[basin]
+
+  basinData = data[data[:BASIN] .== basinName, :]
+  
+  for month = 1:12
+    tempData = basinData[basinData[:MONTH] .== month, :]
+    push!(basinResults, (month, sum(tempData[:HVSWT_KG]), size(tempData)[1]))
+  end #for month
+
+  plotOutputPath = string(projPath, "\\Plots\\Basin\\", basinName, "\\")
+
+  harvestWeight = plot(basinResults, x="Month", y="HarvestWeight", Geom.line, Guide.title(string("Harvest Weight by Month for ", basinName, " Basin")), Guide.xticks(ticks=lakeResults[:Month]))
+  events = plot(basinResults, x="Month", y="Events", Geom.line, Guide.title(string("Number Events by Month for ", basinName, " Basin")), Guide.xticks(ticks=lakeResults[:Month]))
+
+  draw(PNG(string(plotOutputPath, "harvest.png"), 8inch, 6inch), harvestWeight)
+  draw(PNG(string(plotOutputPath, "events.png"), 8inch, 6inch), events)
+end #for basin
