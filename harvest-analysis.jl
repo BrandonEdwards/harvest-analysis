@@ -36,7 +36,7 @@ data = readtable(file)
 data = data[!isna(data[:MONTH]),:]
 
 #############################
-# Entire Lake Analysis
+# Lake Analysis
 #############################
 lakeResults = DataFrame(Month = Int[], HarvestWeight = Float64[], Events = Int64[])
 
@@ -63,7 +63,7 @@ for basin = 1:length(unique(data[:BASIN])) #number of unique basins
   basinName = unique(data[:BASIN])[basin]
 
   basinData = data[data[:BASIN] .== basinName, :]
-  
+
   for month = 1:12
     tempData = basinData[basinData[:MONTH] .== month, :]
     push!(basinResults, (month, sum(tempData[:HVSWT_KG]), size(tempData)[1]))
@@ -77,3 +77,28 @@ for basin = 1:length(unique(data[:BASIN])) #number of unique basins
   draw(PNG(string(plotOutputPath, "harvest.png"), 8inch, 6inch), harvestWeight)
   draw(PNG(string(plotOutputPath, "events.png"), 8inch, 6inch), events)
 end #for basin
+
+#############################
+# Zone Analysis
+#############################
+
+for zone = 1:length(unique(data[:ZONE]))
+  zoneResults = DataFrame(Month = Int[], HarvestWeight = Float64[], Events = Int64[])
+
+  zoneName = unique(data[:ZONE])[zone]
+
+  zoneData = data[data[:ZONE] .== zoneName, :]
+
+  for month = 1:12
+    tempData = zoneData[zoneData[:MONTH] .== month, :]
+    push!(zoneResults, (month, sum(tempData[:HVSWT_KG]), size(tempData)[1]))
+  end
+
+  plotOutputPath = string(projPath, "\\Plots\\Zone\\", zoneName, "\\")
+
+  harvestWeight = plot(zoneResults, x="Month", y="HarvestWeight", Geom.line, Guide.title(string("Harvest Weight by Month for Zone ", zoneName)), Guide.xticks(ticks=lakeResults[:Month]))
+  events = plot(zoneResults, x="Month", y="Events", Geom.line, Guide.title(string("Number Events by Month for Zone ", zoneName)), Guide.xticks(ticks=lakeResults[:Month]))
+
+  draw(PNG(string(plotOutputPath, "harvest.png"), 8inch, 6inch), harvestWeight)
+  draw(PNG(string(plotOutputPath, "events.png"), 8inch, 6inch), events)
+end
