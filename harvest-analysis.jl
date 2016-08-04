@@ -39,10 +39,8 @@ data = data[!isna(data[:MONTH]),:]
 # Entire Lake Analysis
 #############################
 lakeResults = DataFrame(Month = Int[], HarvestWeight = Float64[], Events = Int64[])
-size(data)[1]
+
 for month = 1:12
   tempData = data[data[:MONTH] .== month, :]
   push!(lakeResults, (month, sum(tempData[:HVSWT_KG]), size(tempData)[1]))
 end
-
-lakeResults
