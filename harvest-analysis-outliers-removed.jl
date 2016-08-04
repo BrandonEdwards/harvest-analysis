@@ -35,6 +35,14 @@ data = readtable(file)
 #Drop data with NA for month
 data = data[!isna(data[:MONTH]),:]
 
+#Remove outliers
+iqr = quantile(data[:EFFDUR], 0.75) - quantile(data[:EFFDUR], 0.25)
+
+median = median(data[:EFFDUR])
+
+data = data[data[:EFFDUR] .<= (iqr + median), :]
+data = data[data[:EFFDUR] .>= (iqr - median), :]
+
 #############################
 # Lake Analysis
 #############################
@@ -51,9 +59,9 @@ harvestWeight = plot(lakeResults, x="Month", y="HarvestWeight", Geom.line, Guide
 events = plot(lakeResults, x="Month", y="Events", Geom.line, Guide.title("Number Events by Month for Entire Lake"), Guide.xticks(ticks=lakeResults[:Month]))
 effort = plot(lakeResults, x="Month", y="Effort", Geom.line, Guide.title("Effort by Month for Entire Lake"), Guide.xticks(ticks=lakeResults[:Month]))
 
-draw(PNG(string(plotOutputPath, "harvest_outliers.png"), 8inch, 6inch), harvestWeight)
-draw(PNG(string(plotOutputPath, "events_outliers.png"), 8inch, 6inch), events)
-draw(PNG(string(plotOutputPath, "effort_outliers.png"), 8inch, 6inch), effort)
+draw(PNG(string(plotOutputPath, "harvest_outliers_removed.png"), 8inch, 6inch), harvestWeight)
+draw(PNG(string(plotOutputPath, "events_outliers_removed.png"), 8inch, 6inch), events)
+draw(PNG(string(plotOutputPath, "effort_outliers_removed.png"), 8inch, 6inch), effort)
 
 #############################
 # Basin Analysis
@@ -77,9 +85,9 @@ for basin = 1:length(unique(data[:BASIN])) #number of unique basins
   events = plot(basinResults, x="Month", y="Events", Geom.line, Guide.title(string("Number Events by Month for ", basinName, " Basin")), Guide.xticks(ticks=lakeResults[:Month]))
   effort = plot(basinResults, x="Month", y="Effort", Geom.line, Guide.title(string("Effort by Month for ", basinName, " Basin")), Guide.xticks(ticks=lakeResults[:Month]))
 
-  draw(PNG(string(plotOutputPath, "harvest_outliers.png"), 8inch, 6inch), harvestWeight)
-  draw(PNG(string(plotOutputPath, "events_outliers.png"), 8inch, 6inch), events)
-  draw(PNG(string(plotOutputPath, "effort_outliers.png"), 8inch, 6inch), effort)
+  draw(PNG(string(plotOutputPath, "harvest_outliers_removed.png"), 8inch, 6inch), harvestWeight)
+  draw(PNG(string(plotOutputPath, "events_outliers_removed.png"), 8inch, 6inch), events)
+  draw(PNG(string(plotOutputPath, "effort_outliers_removed.png"), 8inch, 6inch), effort)
 
 end #for basin
 
@@ -105,8 +113,8 @@ for zone = 1:length(unique(data[:ZONE]))
   events = plot(zoneResults, x="Month", y="Events", Geom.line, Guide.title(string("Number Events by Month for Zone ", zoneName)), Guide.xticks(ticks=lakeResults[:Month]))
   effort = plot(zoneResults, x="Month", y="Effort", Geom.line, Guide.title(string("Effort by Month for Zone ", zoneName)), Guide.xticks(ticks=lakeResults[:Month]))
 
-  draw(PNG(string(plotOutputPath, "harvest_outliers.png"), 8inch, 6inch), harvestWeight)
-  draw(PNG(string(plotOutputPath, "events_outliers.png"), 8inch, 6inch), events)
-  draw(PNG(string(plotOutputPath, "effort_outliers.png"), 8inch, 6inch), effort)
+  draw(PNG(string(plotOutputPath, "harvest_outliers_removed.png"), 8inch, 6inch), harvestWeight)
+  draw(PNG(string(plotOutputPath, "events_outliers_removed.png"), 8inch, 6inch), events)
+  draw(PNG(string(plotOutputPath, "effort_outliers_removed.png"), 8inch, 6inch), effort)
 
 end
