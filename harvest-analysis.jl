@@ -38,27 +38,29 @@ data = data[!isna(data[:MONTH]),:]
 #############################
 # Lake Analysis
 #############################
-lakeResults = DataFrame(Month = Int[], HarvestWeight = Float64[], Events = Int64[])
+lakeResults = DataFrame(Month = Int[], HarvestWeight = Float64[], Events = Int64[], MeanCPUE = Float64[])
 
 for month = 1:12
   tempData = data[data[:MONTH] .== month, :]
-  push!(lakeResults, (month, sum(tempData[:HVSWT_KG]), size(tempData)[1]))
+  push!(lakeResults, (month, sum(tempData[:HVSWT_KG]), size(tempData)[1], mean(tempData[:CPUE_1])))
 end
 
 plotOutputPath = string(projPath, "\\Plots\\Lake\\")
 
 harvestWeight = plot(lakeResults, x="Month", y="HarvestWeight", Geom.line, Guide.title("Harvest Weight by Month for Entire Lake"), Guide.xticks(ticks=lakeResults[:Month]))
 events = plot(lakeResults, x="Month", y="Events", Geom.line, Guide.title("Number Events by Month for Entire Lake"), Guide.xticks(ticks=lakeResults[:Month]))
+cpue = plot(lakeResults, x="Month", y="MeanCPUE", Geom.line, Guide.title("Mean CPUE by Month for Entire Lake"), Guide.xticks(ticks=lakeResults[:Month]))
 
 draw(PNG(string(plotOutputPath, "harvest.png"), 8inch, 6inch), harvestWeight)
 draw(PNG(string(plotOutputPath, "events.png"), 8inch, 6inch), events)
+draw(PNG(string(plotOutputPath, "cpue.png"), 8inch, 6inch), cpue)
 
 #############################
 # Basin Analysis
 #############################
 
 for basin = 1:length(unique(data[:BASIN])) #number of unique basins
-  basinResults = DataFrame(Month = Int[], HarvestWeight = Float64[], Events = Int64[])
+  basinResults = DataFrame(Month = Int[], HarvestWeight = Float64[], Events = Int64[], MeanCPUE = Float64[])
 
   basinName = unique(data[:BASIN])[basin]
 
@@ -66,16 +68,19 @@ for basin = 1:length(unique(data[:BASIN])) #number of unique basins
 
   for month = 1:12
     tempData = basinData[basinData[:MONTH] .== month, :]
-    push!(basinResults, (month, sum(tempData[:HVSWT_KG]), size(tempData)[1]))
+    push!(basinResults, (month, sum(tempData[:HVSWT_KG]), size(tempData)[1], mean(tempData[:CPUE_1])))
   end #for month
 
   plotOutputPath = string(projPath, "\\Plots\\Basin\\", basinName, "\\")
 
   harvestWeight = plot(basinResults, x="Month", y="HarvestWeight", Geom.line, Guide.title(string("Harvest Weight by Month for ", basinName, " Basin")), Guide.xticks(ticks=lakeResults[:Month]))
   events = plot(basinResults, x="Month", y="Events", Geom.line, Guide.title(string("Number Events by Month for ", basinName, " Basin")), Guide.xticks(ticks=lakeResults[:Month]))
+  cpue = plot(basinResults, x="Month", y="MeanCPUE", Geom.line, Guide.title(string("Mean CPUE by Month for ", basinName, " Basin")), Guide.xticks(ticks=lakeResults[:Month]))
 
   draw(PNG(string(plotOutputPath, "harvest.png"), 8inch, 6inch), harvestWeight)
   draw(PNG(string(plotOutputPath, "events.png"), 8inch, 6inch), events)
+  draw(PNG(string(plotOutputPath, "cpue.png"), 8inch, 6inch), cpue)
+
 end #for basin
 
 #############################
@@ -83,7 +88,7 @@ end #for basin
 #############################
 
 for zone = 1:length(unique(data[:ZONE]))
-  zoneResults = DataFrame(Month = Int[], HarvestWeight = Float64[], Events = Int64[])
+  zoneResults = DataFrame(Month = Int[], HarvestWeight = Float64[], Events = Int64[], MeanCPUE = Float64[])
 
   zoneName = unique(data[:ZONE])[zone]
 
@@ -91,14 +96,17 @@ for zone = 1:length(unique(data[:ZONE]))
 
   for month = 1:12
     tempData = zoneData[zoneData[:MONTH] .== month, :]
-    push!(zoneResults, (month, sum(tempData[:HVSWT_KG]), size(tempData)[1]))
+    push!(zoneResults, (month, sum(tempData[:HVSWT_KG]), size(tempData)[1], mean(tempData[:CPUE_1])))
   end
 
   plotOutputPath = string(projPath, "\\Plots\\Zone\\", zoneName, "\\")
 
   harvestWeight = plot(zoneResults, x="Month", y="HarvestWeight", Geom.line, Guide.title(string("Harvest Weight by Month for Zone ", zoneName)), Guide.xticks(ticks=lakeResults[:Month]))
   events = plot(zoneResults, x="Month", y="Events", Geom.line, Guide.title(string("Number Events by Month for Zone ", zoneName)), Guide.xticks(ticks=lakeResults[:Month]))
+  cpue = plot(zoneResults, x="Month", y="MeanCPUE", Geom.line, Guide.title(string("Mean CPUE by Month for Zone ", zoneName)), Guide.xticks(ticks=lakeResults[:Month]))
 
   draw(PNG(string(plotOutputPath, "harvest.png"), 8inch, 6inch), harvestWeight)
   draw(PNG(string(plotOutputPath, "events.png"), 8inch, 6inch), events)
+  draw(PNG(string(plotOutputPath, "cpue.png"), 8inch, 6inch), cpue)
+
 end
