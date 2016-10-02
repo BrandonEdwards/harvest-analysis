@@ -1,7 +1,7 @@
 #############################
-#harvest-analysis.jl
+#harvest-analysis-outliers-removed.jl
 #Brandon Edwards
-#Last Updated: August 2016
+#Last Updated: October 2016
 #############################
 
 #############################
